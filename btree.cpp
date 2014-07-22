@@ -7,7 +7,8 @@ struct node {
 	int val;
 	node* left;
 	node* right;
-	node(int v=0) : val(v), left(NULL), right(NULL) { }
+	node* parent;
+	node(int v=0) : val(v), left(NULL), right(NULL), parent(NULL) { }
 };
 
 class btree {
@@ -17,6 +18,7 @@ private:
 	void _free_btree(node* nd);
 	void _in_order_visit(node* root);
 	node* _search(node* root, int data);
+	void _transplant(node* u, node* v);
 public:
 	btree( ) : root(NULL) { }
 	~btree( ) { free_btree(); }
@@ -25,6 +27,8 @@ public:
 	node* search(int data);
 	int min();
 	int max();
+	node* successor(node* nd);
+	void  delete_node(node* nd);
 };
 
 node* btree::_search(node* root, int data) {
@@ -65,12 +69,14 @@ void btree::insert(int data) {
 			if(data<=p->val) {
 				if(p->left == NULL) {
 					p->left = nd;
+					nd->parent = p;
 					break;
 				} else
 					p = p->left; 
 			} else {
 				if(p->right == NULL) {
 					p->right = nd;
+					nd->parent = p;
 					break;
 				} else
 					p = p->right;
@@ -112,17 +118,77 @@ int btree::max() {
 	return p->val;
 }
 
+
+node* btree::successor(node* nd) {
+	if(nd == NULL) return NULL;
+	if(nd->right!=NULL) {
+		node* r = nd->right;
+		while(r->left!=NULL) 
+			r = r->left;
+		return r;		
+	} else {
+		node* p = nd->parent;
+		while(p!=NULL && p->right == nd) {
+			nd = p;
+			p = p->parent;
+		}
+		return p;
+	}
+
+}
+
+
+void btree::_transplant(node* u, node* v) {
+	if(u == NULL) return;
+	node* p = u->parent;
+	if(p ==NULL)
+		root = v;
+	else if(p->left == u)
+		p->left = v;
+	else if(p->right = u)
+		p->right =v;
+	if(v!=NULL)
+		v->parent = p;
+
+}
+
+
+void btree::delete_node(node* nd) {
+	if(nd == NULL) return;
+	if(nd->left == NULL)
+		_transplant(nd, nd->right);
+	else if(nd->right == NULL)
+		_transplant(nd, nd->left);
+	else {
+		node* y = successor(nd);
+		if(y!=nd->right) {
+			_transplant(y, y->right);
+			y->right = nd->right;
+			y->right->parent = y;
+		}
+		y->left = nd->left;
+		y->left->parent  = y;
+		_transplant(nd, y);	
+	}
+	delete nd;
+}
+
+
 int main() {
 	btree bt;
+	bt.insert(5);
+	bt.insert(3);
 	bt.insert(7);
+	bt.insert(2);
+	bt.insert(4);
 	bt.insert(6);
 	bt.insert(8);
-	bt.insert(3);
-	bt.insert(9);
-	bt.insert(0);
-	bt.insert(5);
 	bt.in_order();
-	cout<<bt.min()<<" "<<bt.max()<<endl;
+	cout<<endl;
+	node* nd = bt.search(5);
+	bt.delete_node(nd);
+	bt.in_order();
+	cout<<endl;
 }
 
 

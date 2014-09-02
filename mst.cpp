@@ -3,6 +3,9 @@
 #include <string>
 #include <list>
 #include <algorithm>
+#include "disjoint_set.h"
+
+//MST algorithm
 
 using namespace std;
 
@@ -59,6 +62,26 @@ public:
 		return e;
 	}
 
+	vector<edge> mst_kruskal() {
+		vector<edge> edges;
+		vector<edge> all_edges = get_all_edges();
+		sort(all_edges.begin(), all_edges.end(), edge_compare);
+		disjoint_set ds_set(vertex_num);
+		int mst_weight = 0;
+		for(int i=0; i<all_edges.size(); ++i) {
+			edge e = all_edges[i];
+			int  src  = e.src;
+			int  dest = e.dest;
+			if(ds_set.ds_find(src) != ds_set.ds_find(dest)) {
+				mst_weight += e.weight;
+				edges.push_back(e);
+				ds_set.ds_union(src, dest);	
+			} 		
+		}	
+		cout<<"MST edge weight is: "<<mst_weight<<endl;		
+		return edges;
+	}
+
 	void show_graph() {
 		for(int i=0; i<vertex_num; ++i) {
 			cout<<"["<<graph_node[i].source<<"] ";
@@ -74,23 +97,31 @@ public:
 };
 
 graph gen_graph() {
-	graph g(6);
-	g.connect(0,1,10);
-	g.connect(0,3,9);
-	g.connect(1,4,8);
-	g.connect(2,4,4);
-	g.connect(2,5,7);
-	g.connect(3,1,5);
-	g.connect(4,3,6);
-	g.connect(5,5,3);
+	//a b c d e f g h i
+        //0 1 2 3 4 5 6 7 8 
+	graph g(9);
+	g.connect(0,1,4);
+	g.connect(0,7,8);
+	g.connect(1,7,11);
+        g.connect(1,2,8);
+	g.connect(2,8,2);
+	g.connect(8,7,7);
+	g.connect(7,6,1);
+	g.connect(8,8,6);
+	g.connect(2,3,7);
+	g.connect(2,5,4);
+	g.connect(6,5,2);
+	g.connect(3,5,14);
+	g.connect(3,4,9);
+	g.connect(4,5,10);	
 	return g;
 }
 
 int main() {
 	graph g = gen_graph();
 	g.show_graph();
-	vector<edge> v = g.get_all_edges();
-	sort(v.begin(), v.end(), edge_compare);
+	vector<edge> v = g.mst_kruskal();
+	cout<<"MST edges .. "<<endl;
 	for(int i=0; i<v.size(); ++i)
-		cout<<v[i].weight<<" "<<v[i].src<<" "<<v[i].dest<<endl; 
+		cout<<v[i].weight<<"-> ("<<v[i].src<<", "<<v[i].dest<<" )"<<endl; 
 }

@@ -198,21 +198,24 @@ void  btree::_pretty_print(node* nd){
 	if(nd == NULL) return;
 	int height = _height(nd);
 	int num_node = (1<<height)-1;
-	//cout<<"Number of Node is "<<num_node<<endl;
-	int space = 1<<height;
+	int space = 1<<(height-1);
 	deque<node*> q_cur;
 	deque<node*> q_nxt;
 	q_cur.push_back(nd);
 	int indent = space/2;
+	int dis = space;
 	while(height>0){
+		for(int i=0; i<indent; ++i) 
+			cout<<" ";
 		while(!q_cur.empty()) {
 			node *n =q_cur.front();
-			for(int i=0; i<indent; ++i)
-				cout<<" ";
 			if(n!=NULL)
 		   		cout<<n->val;	
 			else
 		 		cout<<" ";
+			for(int i=0; i<dis; ++i)
+				cout<<" ";
+
 			if(n!=NULL) 
 				q_nxt.push_back(n->left);
 			else
@@ -224,6 +227,7 @@ void  btree::_pretty_print(node* nd){
 			q_cur.pop_front();	
 		}
 		indent = indent >> 1;
+		dis = dis >> 1;
 		--height;
 		cout<<endl;
 		q_cur = q_nxt;

@@ -19,7 +19,7 @@ class priority_queue {
 friend std::ostream& operator<<(std::ostream& os, priority_queue& q); 
 private:
 	std::vector<qdata>   _v;
-	std::map<int, int>   _m;
+	std::map<int,int>   _m;
 	int             _size;	
 	inline int _parent(int i) { return (i-1)>>1; }
 	inline int _left(int i)   { return (i<<1)+1; }
@@ -27,12 +27,16 @@ private:
 	inline void _swap(int a, int b);
 	void _min_heapify(int i);
 	void _build_heap();
+	void _insert_to_map(int key, int val);
+	void _remove_from_map(int key);
+	void _update_map(int key, int val);
 public:
-	priority_queue(int size) : _size(size) { } 
+	priority_queue(int size) : _size(size) { _m.clear();} 
 	~priority_queue( )  { }	
 	void insert(qdata x);
 	qdata min();
 	qdata extract_min();
+	void _print_map();
 	void decrease_key(int idx, int key);
 	void decrease_key_by_id (int id, int key);
 	int  get_key(int id) { int idx = _m[id]; return _v[idx].key; }
@@ -46,6 +50,29 @@ public:
 		return false;		
 	}
 };
+
+void priority_queue::_insert_to_map(int key, int val) {
+	_m.insert(std::pair<int, int>(key, val));
+	std::cout<<"map: insert key "<<key<<std::endl;
+	_print_map();
+}
+
+void priority_queue::_remove_from_map(int key) {
+	std::map<int, int>::iterator siter = _m.find(key);
+	std::map<int, int>::iterator eiter = _m.end();
+	if(siter!=eiter) {
+		_m.erase(siter);
+		std::cout<<"map:remove key "<<key<<std::endl;
+	}
+	_print_map();
+}
+
+void priority_queue::_update_map(int key, int val) {
+	_m[key]=val;
+	std::cout<<"map: update key "<<key<<std::endl;
+	_print_map();
+}
+
 
 std::ostream& operator<<(std::ostream& os, priority_queue& q) {
 	for(int i=0; i<q._v.size(); ++i) 
@@ -68,7 +95,9 @@ qdata priority_queue::extract_min() {
 		exit(1);
 	}
 	qdata min = _v[0];
+	_remove_from_map(min.id);
 	_v[0]=_v[_v.size()-1];
+	_update_map(_v[_v.size()-1].id, 0);
 	_v.pop_back();
 	_min_heapify(0);
 	return min;	
@@ -84,6 +113,16 @@ void priority_queue::decrease_key(int idx, int key) {
 
 }
 
+void priority_queue::_print_map() {
+	std::map<int,int>::iterator siter = _m.begin();
+	std::map<int,int>::iterator eiter = _m.end();
+	std::cout<<"---- Map m -----"<<std::endl;
+	while(siter!=eiter) {
+		std::cout<<siter->first<<"->"<<siter->second<<std::endl;
+		++siter;	
+	}
+}
+
 
 void priority_queue::decrease_key_by_id(int id, int key) {
 	int idx = _m[id];
@@ -93,17 +132,27 @@ void priority_queue::decrease_key_by_id(int id, int key) {
 void priority_queue::insert(qdata x) {
 	_v.push_back(x);		
 	_v[_v.size()-1].key = 99999;
-	_m[x.id] = _v.size()-1;
+	_insert_to_map(x.id, _v.size()-1);
 	decrease_key(_v.size()-1, x.key);	
 }
 
 void priority_queue::_swap(int a, int b) {
+	std::cout<<"swap "<<a<<" and "<<b<<std::endl;
+	if(_m[_v[a].id] != a) {
+		std::cout<<"Error! key "<<_v[a].id<<" "<< _m[_v[a].id]<<std::endl;
+		exit(1);
+	}
+	if(_m[_v[b].id] != b) {
+		std::cout<<"Error! key "<<_v[b].id<<" "<< _m[_v[b].id]<<std::endl;
+		exit(1);
+	}
+
 	qdata tmp;
-	tmp = _v[a];
+	tmp   = _v[a];
 	_v[a] = _v[b];
 	_v[b] = tmp;
-	_m[_v[a].id] = a;
-	_m[_v[b].id] = b;
+	_update_map(_v[a].id, a);	
+	_update_map(_v[b].id, b);	
 }
 
 void priority_queue::_min_heapify(int i) {
@@ -117,8 +166,6 @@ void priority_queue::_min_heapify(int i) {
 	
 	if(r<=_v.size()-1 && _v[r].key < _v[smallest].key)
 		smallest = r;
-	//std::cout<<i<<" "<<l<<" "<<r<<" "<<" "<<smallest<<std::endl;
-	//std::cout<<_v[i].key<<" "<<_v[l].key<<" "<<_v[r].key<<" "<<std::endl;
 	if(smallest != i) { 
 		_swap(smallest, i);
 		_min_heapify(smallest);

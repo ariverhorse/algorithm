@@ -95,6 +95,8 @@ public:
 			d.data = static_cast<void*>(pre);
 			q.insert(d); 
 		}
+		cout<<"Init..."<<endl;
+		q._print_map();
 		vector<edge> es;
 		int twt =0;
 		while(!q.empty()) {
@@ -102,7 +104,6 @@ public:
 			int   src = a.id;
 			int   pre = *(static_cast<int*>(a.data));
 			int   wt  = a.key;
-			cout<<"Extract: src="<<src<<"  pre="<<pre<<" wt="<<wt<<endl;
 			if(pre!=-1) {
 				edge e;
 				e.src = pre;
@@ -127,7 +128,8 @@ public:
 			}
 			//cout<<q<<endl;	 
 		}
-		//cout<<"MST edge weight is: "<<twt<<endl;		
+		cout<<"MST edge weight is: "<<twt<<endl;	
+		q._print_map();	
 		return es; 	
 	}
 

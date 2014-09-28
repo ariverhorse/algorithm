@@ -39,8 +39,28 @@ public:
 	void _print_map();
 	void decrease_key(int idx, int key);
 	void decrease_key_by_id (int id, int key);
-	int  get_key(int id) { int idx = _m[id]; return _v[idx].key; }
-	void* get_data(int id) { int idx = _m[id]; return _v[idx].data; }
+	int  get_key(int id) { 
+	     std::map<int,int>::iterator siter = _m.begin();
+	     std::map<int,int>::iterator eiter = _m.end();
+	     if(_m.find(id) == eiter) {
+			std::cout<<"Error! cannot find key "<<id<<" in the map"<<std::endl;
+			exit(1);
+	     }
+
+	     int idx = _m[id]; 
+	     return _v[idx].key; 
+	}
+	void* get_data(int id) { 
+	     std::map<int,int>::iterator siter = _m.begin();
+	     std::map<int,int>::iterator eiter = _m.end();
+	     if(_m.find(id) == eiter) {
+			std::cout<<"Error! cannot find key "<<id<<" in the map"<<std::endl;
+			exit(1);
+	     }
+	     int idx = _m[id];
+	     return _v[idx].data;
+	}
+
 	inline bool empty() { return _v.size()==0 ; }
 	bool  is_in_heap(int id)  { 
 		for(int i=0; i<_v.size(); ++i) 
@@ -53,8 +73,8 @@ public:
 
 void priority_queue::_insert_to_map(int key, int val) {
 	_m.insert(std::pair<int, int>(key, val));
-	std::cout<<"map: insert key "<<key<<std::endl;
-	_print_map();
+	//std::cout<<"map: insert key "<<key<<std::endl;
+	//_print_map();
 }
 
 void priority_queue::_remove_from_map(int key) {
@@ -62,15 +82,15 @@ void priority_queue::_remove_from_map(int key) {
 	std::map<int, int>::iterator eiter = _m.end();
 	if(siter!=eiter) {
 		_m.erase(siter);
-		std::cout<<"map:remove key "<<key<<std::endl;
+	//	std::cout<<"map:remove key "<<key<<std::endl;
 	}
-	_print_map();
+	//_print_map();
 }
 
 void priority_queue::_update_map(int key, int val) {
 	_m[key]=val;
-	std::cout<<"map: update key "<<key<<std::endl;
-	_print_map();
+	//std::cout<<"map: update key "<<key<<std::endl;
+	//_print_map();
 }
 
 
@@ -96,10 +116,15 @@ qdata priority_queue::extract_min() {
 	}
 	qdata min = _v[0];
 	_remove_from_map(min.id);
-	_v[0]=_v[_v.size()-1];
-	_update_map(_v[_v.size()-1].id, 0);
-	_v.pop_back();
-	_min_heapify(0);
+	if(_v.size()>=2) {
+		_v[0]=_v[_v.size()-1];
+		_update_map(_v[_v.size()-1].id, 0);
+		_v.pop_back();
+		_min_heapify(0);
+	} else {
+	    _v.pop_back();
+	}
+
 	return min;	
 }
 
@@ -137,16 +162,6 @@ void priority_queue::insert(qdata x) {
 }
 
 void priority_queue::_swap(int a, int b) {
-	std::cout<<"swap "<<a<<" and "<<b<<std::endl;
-	if(_m[_v[a].id] != a) {
-		std::cout<<"Error! key "<<_v[a].id<<" "<< _m[_v[a].id]<<std::endl;
-		exit(1);
-	}
-	if(_m[_v[b].id] != b) {
-		std::cout<<"Error! key "<<_v[b].id<<" "<< _m[_v[b].id]<<std::endl;
-		exit(1);
-	}
-
 	qdata tmp;
 	tmp   = _v[a];
 	_v[a] = _v[b];

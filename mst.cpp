@@ -95,8 +95,6 @@ public:
 			d.data = static_cast<void*>(pre);
 			q.insert(d); 
 		}
-		cout<<"Init..."<<endl;
-		q._print_map();
 		vector<edge> es;
 		int twt =0;
 		while(!q.empty()) {
@@ -117,19 +115,22 @@ public:
 			vector<edge>::iterator eiter = s.end();
 			while(siter!=eiter) {
 				int dest = (*siter).dest;
-				int old_key = q.get_key(dest);
-				int new_key = (*siter).weight;
-				if(q.is_in_heap(dest) && old_key > new_key) {
-					q.decrease_key_by_id(dest, new_key);
-					*static_cast<int*>(q.get_data(dest)) = src;		
-				        //cout<<"Update "<<dest<<" weight to "<<new_key<<" pre to "<<src<<endl;	
-				}	
+				if(q.is_in_heap(dest)) {
+					int old_key = q.get_key(dest);
+					int new_key = (*siter).weight;
+		
+					if(old_key > new_key) {
+						q.decrease_key_by_id(dest, new_key);
+						*static_cast<int*>(q.get_data(dest)) = src;		
+				        	//cout<<"Update "<<dest<<" weight to "<<new_key<<" pre to "<<src<<endl;	
+					}	
+				}
 				++siter;
 			}
 			//cout<<q<<endl;	 
 		}
 		cout<<"MST edge weight is: "<<twt<<endl;	
-		q._print_map();	
+		//q._print_map();	
 		return es; 	
 	}
 

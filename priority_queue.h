@@ -30,16 +30,16 @@ private:
 	void _insert_to_map(int key, int val);
 	void _remove_from_map(int key);
 	void _update_map(int key, int val);
+	void _print_map();
 public:
 	priority_queue(int size) : _size(size) { _m.clear();} 
 	~priority_queue( )  { }	
 	void insert(qdata x);
 	qdata min();
 	qdata extract_min();
-	void _print_map();
 	void decrease_key(int idx, int key);
 	void decrease_key_by_id (int id, int key);
-	int  get_key(int id) { 
+	inline int  get_key(int id) { 
 	     std::map<int,int>::iterator siter = _m.begin();
 	     std::map<int,int>::iterator eiter = _m.end();
 	     if(_m.find(id) == eiter) {
@@ -50,7 +50,7 @@ public:
 	     int idx = _m[id]; 
 	     return _v[idx].key; 
 	}
-	void* get_data(int id) { 
+	inline void* get_data(int id) { 
 	     std::map<int,int>::iterator siter = _m.begin();
 	     std::map<int,int>::iterator eiter = _m.end();
 	     if(_m.find(id) == eiter) {
@@ -62,12 +62,12 @@ public:
 	}
 
 	inline bool empty() { return _v.size()==0 ; }
-	bool  is_in_heap(int id)  { 
-		for(int i=0; i<_v.size(); ++i) 
-			if(_v[i].id == id) 
-				return true;
-
-		return false;		
+	inline bool  is_in_heap(int id)  { 
+	     std::map<int,int>::iterator eiter = _m.end();
+	     if(_m.find(id) == eiter) 
+	     	return false;
+	     else	
+		return true;
 	}
 };
 
@@ -81,8 +81,8 @@ void priority_queue::_remove_from_map(int key) {
 	std::map<int, int>::iterator siter = _m.find(key);
 	std::map<int, int>::iterator eiter = _m.end();
 	if(siter!=eiter) {
-		_m.erase(siter);
-	//	std::cout<<"map:remove key "<<key<<std::endl;
+		//_m.erase(siter);
+		//std::cout<<"map:remove key "<<key<<std::endl;
 	}
 	//_print_map();
 }
@@ -156,7 +156,7 @@ void priority_queue::decrease_key_by_id(int id, int key) {
 
 void priority_queue::insert(qdata x) {
 	_v.push_back(x);		
-	_v[_v.size()-1].key = 99999;
+	_v[_v.size()-1].key = std::numeric_limits<int>::max();
 	_insert_to_map(x.id, _v.size()-1);
 	decrease_key(_v.size()-1, x.key);	
 }

@@ -62,7 +62,7 @@ public:
 	}
 
 	inline bool empty() { return _v.size()==0 ; }
-	inline bool  is_in_heap(int id)  { 
+	inline bool  is_in_heap(int id)  {
 	     std::map<int,int>::iterator eiter = _m.end();
 	     if(_m.find(id) == eiter) 
 	     	return false;
@@ -81,7 +81,7 @@ void priority_queue::_remove_from_map(int key) {
 	std::map<int, int>::iterator siter = _m.find(key);
 	std::map<int, int>::iterator eiter = _m.end();
 	if(siter!=eiter) {
-		//_m.erase(siter);
+		_m.erase(siter);
 		//std::cout<<"map:remove key "<<key<<std::endl;
 	}
 	//_print_map();
@@ -135,7 +135,6 @@ void priority_queue::decrease_key(int idx, int key) {
 		_swap(idx, _parent(idx));
 		idx = _parent(idx);
 	}
-
 }
 
 void priority_queue::_print_map() {
@@ -151,7 +150,7 @@ void priority_queue::_print_map() {
 
 void priority_queue::decrease_key_by_id(int id, int key) {
 	int idx = _m[id];
-	decrease_key(idx, key);	
+	decrease_key(idx, key);
 }
 
 void priority_queue::insert(qdata x) {

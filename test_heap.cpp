@@ -21,7 +21,7 @@ int main() {
 		cout<<"Please input the key that you want to decrease: "<<endl;
 		cin>> key;
 		q.decrease_key_by_id(id, key);		
-		cout<<q<<endl;	
+		//cout<<q<<endl;	
 	}
 	//while(!q.empty()) {
 	//	d = q.extract_min();

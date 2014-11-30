@@ -1,0 +1,67 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class kmp {
+private:
+	static kmp* instance;
+	kmp() { };
+public:
+	static void match(string& line, string& pattern);
+	static kmp* get_instance() {
+		instance = new kmp;
+		return instance;	
+	}
+};
+
+kmp* kmp::instance = NULL;
+
+
+void kmp::match(string& line, string& pattern) {
+	int pattern_size = pattern.size();
+	int line_size    = line.size();
+	
+	//Init PI
+	vector<int>  PI(pattern_size, 0);
+
+	//Compute PI
+	int k = PI[0];
+	cout<<PI[0]<<endl;
+	for(int q=1; q<pattern_size; ++q) {
+		while(k>=1 && pattern[q] != pattern[k]) 	
+			k = PI[k-1];
+		if(k>=0 && pattern[q] == pattern[k])
+			k = k+1;
+		PI[q] = k;
+		cout<<PI[q]<<endl;
+	}
+
+	int q = 0;
+	for(int i=0; i<line_size; ++i) {
+		while(q>=1 && pattern[q]!=line[i])
+			q = PI[q-1];
+		if(pattern[q] == line[i])
+			q = q+1;
+		if(q == pattern_size) {
+			cout<<"Match at "<<i-pattern_size+1<<endl;
+			q = PI[pattern_size-1];
+			//break;	
+		}
+	}	
+		
+}
+
+int main(int argc, char** argv) {
+	kmp* instance = kmp::get_instance();
+	//string line("xxabacaxxxxabacayyyyabaca");
+	//string pattern("abaca");
+	string line(argv[2]);
+	string pattern(argv[1]);
+	cout<<"Line is:  "<<line<<endl;
+	cout<<"Pattern is: "<<pattern<<endl;
+	instance->match(line, pattern);
+
+}
+

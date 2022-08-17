@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 
+//This is kmp
 using namespace std;
 
 class kmp {

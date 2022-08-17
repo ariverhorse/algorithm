@@ -5,6 +5,8 @@
 #define NUM 50
 using namespace std;
 
+// quick sort
+
 int partition(vector<int>& v, int s, int e) {
 	int i,j;
 	for(i=s-1, j=s;j<=e; ++j) {
